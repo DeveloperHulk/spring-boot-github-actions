@@ -12,10 +12,3 @@ public class DemoApplication {
     }
 }
 
-@Controller
-class WebController {
-    @GetMapping("/")
-    public String home() {
-        return "index"; // This will serve index.html from the static folder
-    }
-}
