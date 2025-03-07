@@ -2,9 +2,8 @@ package com.example.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -13,11 +12,10 @@ public class DemoApplication {
     }
 }
 
-@RestController
-@RequestMapping("/api")
-class DemoController {
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello, GitHub Actions Rahul Keep it up you are doing well and keep going!";
+@Controller
+class WebController {
+    @GetMapping("/")
+    public String home() {
+        return "index"; // This will serve index.html from the static folder
     }
 }
