@@ -81,5 +81,5 @@ jobs:
             sudo docker pull rahul87096/spring-boot-demo:latest
 
             echo "Running the new container..."
-            sudo docker run -d --name my-spring-app -p 9090:8080 rahul87096/spring-boot-demo::latest
+            sudo docker run -d --name my-spring-app -p 9090:8080 rahul87096/spring-boot-demo:latest
 
