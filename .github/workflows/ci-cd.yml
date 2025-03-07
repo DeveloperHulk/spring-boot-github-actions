@@ -58,3 +58,32 @@ jobs:
       - name: Push Docker Image to Docker Hub
         run: |
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-demo:latest
+
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Connect to EC2 & Deploy Docker Image
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo -i
+            
+            echo "Logging into Docker Hub..."
+            docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+
+            echo "Stopping existing container (if running)..."
+            docker stop my-spring-app || true
+            docker rm my-spring-app || true
+
+            echo "Pulling latest image from Docker Hub..."
+            docker pull rahul87096/spring-boot-demo:latest
+
+            echo "Running the new container..."
+            docker run -d --name my-spring-app -p 80:8080 rahul87096/spring-boot-demo::latest
+
