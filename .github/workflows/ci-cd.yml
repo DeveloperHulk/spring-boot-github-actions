@@ -75,15 +75,11 @@ jobs:
             sudo -i
             
             echo "Logging into Docker Hub..."
-            docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
-
-            echo "Stopping existing container (if running)..."
-            docker stop my-spring-app || true
-            docker rm my-spring-app || true
+            sudo docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
 
             echo "Pulling latest image from Docker Hub..."
-            docker pull rahul87096/spring-boot-demo:latest
+            sudo docker pull rahul87096/spring-boot-demo:latest
 
             echo "Running the new container..."
-            docker run -d --name my-spring-app -p 80:8080 rahul87096/spring-boot-demo::latest
+            sudo docker run -d --name my-spring-app -p 80:8080 rahul87096/spring-boot-demo::latest
 
