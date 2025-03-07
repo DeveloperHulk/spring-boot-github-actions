@@ -80,8 +80,8 @@ jobs:
             echo "Pulling latest image from Docker Hub..."
             sudo docker pull rahul87096/spring-boot-demo:latest
 
-            docker stop my-spring-app
-            docker rm my-spring-app
+            sudo docker stop my-spring-app
+            sudo docker rm my-spring-app
 
             echo "Running the new container..."
             sudo docker run -d --name my-spring-app -p 9090:8080 rahul87096/spring-boot-demo:latest
