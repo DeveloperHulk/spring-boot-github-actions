@@ -1,36 +1,49 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.2</version>  <!-- Latest stable version -->
+        <relativePath/> <!-- Look up parent from Maven repository -->
+    </parent>
+
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <name>demo</name>
+    <description>Spring Boot application with GitHub Actions</description>
     <packaging>jar</packaging>
 
-    <name>Demo Application</name>
-    <description>Spring Boot Demo App</description>
-
     <properties>
-        <java.version>11</java.version>
-        <spring-boot.version>2.7.5</spring-boot.version>
+        <java.version>17</java.version> <!-- Ensure Java 17+ is used -->
     </properties>
 
     <dependencies>
+        <!-- Spring Boot Web for building REST APIs -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Test for unit testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.2</version>  <!-- Plugin version specified -->
             </plugin>
         </plugins>
     </build>
 </project>
-
-
