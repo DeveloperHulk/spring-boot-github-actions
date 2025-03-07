@@ -18,6 +18,6 @@ public class DemoApplication {
 class DemoController {
     @GetMapping("/hello")
     public String hello() {
-        return "Hello, GitHub Actions Rahul Keep it up you are doing well!";
+        return "Hello, GitHub Actions Rahul Keep it up you are doing well and keep going!";
     }
 }
