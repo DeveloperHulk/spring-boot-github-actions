@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: ECS Deployment
 
 on:
   push:
