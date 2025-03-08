@@ -63,7 +63,7 @@ jobs:
         run: |
           docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
-  Deploy_to_ECR:
+  Deploy_to_ECS:
     needs: Deploy_image_ECR
     runs-on: ubuntu-latest
 
