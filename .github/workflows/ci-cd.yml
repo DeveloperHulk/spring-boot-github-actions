@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - ECR
   pull_request:
     branches:
-      - main
+      - ECR
 
 jobs:
   Build-Spring-boot:
@@ -63,28 +63,20 @@ jobs:
         run: |
           docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
-  Deploy_to_EC2:
+  Deploy_to_ECR:
     needs: Deploy_image_ECR
     runs-on: ubuntu-latest
 
     steps:
-      - name: Connect to EC2 & Deploy Docker Image
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            sudo -i
-            
-            echo "Logging into AWS ECR..."
-            aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/q0j4m6z6
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION}}
 
-            echo "Pulling latest image from AWS ECR..."
-            sudo docker pull ${{ secrets.ECR_REPOSITORY }}:latest
-
-            sudo docker stop my-spring-app || true
-            sudo docker rm my-spring-app || true
-
-            echo "Running the new container..."
-            sudo docker run -d --name my-spring-app -p 9090:8080 ${{ secrets.ECR_REPOSITORY }}:latest
+      - name: Update ECS Task Definition
+        run: |
+          aws ecs update-service --cluster my-ecs-cluster \
+          --service spring-boot-service \
+          --force-new-deployment
