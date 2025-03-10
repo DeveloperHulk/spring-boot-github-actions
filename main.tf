@@ -17,10 +17,7 @@ data "aws_subnets" "default" {
 
 # Fetch Default Security Group
 data "aws_security_group" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
+  id = "sg-00dad11ecdc5a4537"  # Replace with the actual security group ID
 }
 
 # Create Public ECR Repository
