@@ -105,4 +105,4 @@ jobs:
         run: |
           aws ecs update-service --cluster my-ecs-cluster-v3 \
           --service spring-boot-service \
-          --force-new-deployment
+          --desired-count 1
