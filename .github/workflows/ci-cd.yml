@@ -33,6 +33,10 @@ jobs:
       - name: Apply Terraform
         run: terraform apply -auto-approve
 
+      - name: Extract ECR Repository URI
+        run: |
+          echo "ECR_REPO_URI=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
+
   Build-Spring-boot:
     needs: Terraform-Setup
     runs-on: ubuntu-latest
@@ -82,11 +86,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.ECR_REPOSITORY }}:latest .
+          docker build -t $ECR_REPO_URI:latest .
 
       - name: Push Docker Image to AWS Public ECR
         run: |
-          docker push ${{ secrets.ECR_REPOSITORY }}:latest
+          docker push $ECR_REPO_URI:latest
 
   Deploy_to_ECS:
     needs: Deploy_image_ECR
