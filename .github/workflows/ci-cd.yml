@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - ECR
+    paths:
+      - 'src/main/resources/static/index.html'  # ✅ Trigger only when this file changes
   pull_request:
     branches:
       - ECR
