@@ -35,7 +35,10 @@ jobs:
 
       - name: Extract ECR Repository URI
         run: |
-          echo "ECR_REPO_URI=$(terraform output -raw ecr_repository_url)" >> $GITHUB_ENV
+          ECR_URI=$(terraform output -raw ecr_repository_url | tr -d '\r')
+          echo "ECR_REPO_URI=$ECR_URI" >> $GITHUB_ENV
+          echo "Extracted ECR URI: $ECR_URI"
+
 
   Build-Spring-boot:
     needs: Terraform-Setup
