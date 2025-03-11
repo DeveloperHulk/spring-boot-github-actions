@@ -34,6 +34,10 @@ resource "aws_ecrpublic_repository" "spring_boot_repo" {
   repository_name = "rahul87096/spring-boot-demo"
 }
 
+output "ecr_repository_url" {
+  value = aws_ecrpublic_repository.spring_boot_repo.repository_uri
+}
+
 # Create ECS Cluster
 resource "aws_ecs_cluster" "spring_boot_cluster" {
   name = "my-ecs-cluster-v3"
