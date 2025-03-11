@@ -2,6 +2,15 @@ provider "aws" {
   region = "us-east-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket         = "terraform-state-bucket87096"
+    key            = "ecs/terraform.tfstate"  # Change "ecs" if needed
+    region         = "us-east-1"              # Change to your S3 region
+    encrypt        = true
+  }
+}
+
 # Fetch Default VPC
 data "aws_vpc" "default" {
   default = true
@@ -27,7 +36,7 @@ resource "aws_ecrpublic_repository" "spring_boot_repo" {
 
 # Create ECS Cluster
 resource "aws_ecs_cluster" "spring_boot_cluster" {
-  name = "my-ecs-cluster-v2"
+  name = "my-ecs-cluster-v3"
 }
 
 # Create ECS Task Definition
