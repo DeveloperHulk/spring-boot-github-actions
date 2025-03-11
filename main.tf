@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "ap-south-1"
+  region = "us-east-1"
 }
 
 # Fetch Default VPC
@@ -17,7 +17,7 @@ data "aws_subnets" "default" {
 
 # Fetch Default Security Group
 data "aws_security_group" "default" {
-  id = "sg-00dad11ecdc5a4537"  # Replace with the actual security group ID
+  id = "sg-08005a0fe126ac723"  # Replace with the actual security group ID
 }
 
 # Create Public ECR Repository
@@ -35,7 +35,7 @@ resource "aws_ecs_task_definition" "spring_boot_task" {
   family                   = "spring-boot-task"
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn       = data.aws_iam_role.ecs_task_execution_role.arn
   cpu                      = "512"
   memory                   = "2048"
 
@@ -56,29 +56,10 @@ resource "aws_ecs_task_definition" "spring_boot_task" {
   ])
 }
 
-# IAM Role for ECS Task Execution
-resource "aws_iam_role" "ecs_task_execution_role" {
+data "aws_iam_role" "ecs_task_execution_role" {
   name = "ecsTaskExecutionRole"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
 }
 
-# Attach Policies to ECS Task Role
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_attachment" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
 
 # Create an ALB
 resource "aws_lb" "spring_boot_alb" {
