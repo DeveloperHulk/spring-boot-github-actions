@@ -27,7 +27,7 @@ resource "aws_ecrpublic_repository" "spring_boot_repo" {
 
 # Create ECS Cluster
 resource "aws_ecs_cluster" "spring_boot_cluster" {
-  name = "my-ecs-cluster"
+  name = "my-ecs-cluster-v2"
 }
 
 # Create ECS Task Definition
