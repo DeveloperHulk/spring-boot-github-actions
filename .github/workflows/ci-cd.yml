@@ -67,6 +67,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4  # Fetches your repo, including k8s/ directory
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
