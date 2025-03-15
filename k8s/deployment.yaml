@@ -9,8 +9,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
       maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: spring-boot-app
@@ -22,7 +22,7 @@ spec:
       containers:
         - name: spring-boot-container
           image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app:latest
-          imagePullPolicy: Always  # Ensures latest image is always pulled
+          imagePullPolicy: Always  # Ensures latest image is pulled
           ports:
             - containerPort: 8080
           env:
