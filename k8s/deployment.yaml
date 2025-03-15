@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-container
-          image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app
+          image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app:latest
           ports:
             - containerPort: 8080
           env:
