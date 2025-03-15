@@ -90,3 +90,7 @@ jobs:
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
+
+      - name: Force Rolling Update
+        run: |
+          kubectl rollout restart deployment spring-boot-app
