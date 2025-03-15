@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-container
-          image: ${{ secrets.ECR_REPOSITORY }}:latest  # Image from AWS ECR
+          image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app
           ports:
             - containerPort: 8080
           env:
