@@ -1,45 +1,16 @@
-name: ECS Deployment
+name: EKS Deployment
 
 on:
   push:
     branches:
       - ECR
-    paths:
-      - 'src/main/resources/static/index.html'  # ✅ Trigger only when this file changes
   pull_request:
     branches:
       - ECR
 
 jobs: 
-  Terraform-Setup:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.6
-
-      - name: Initialize Terraform
-        run: terraform init
-
-      - name: Apply Terraform
-        run: terraform apply -auto-approve
-
-
   Build-Spring-boot:
-    needs: Terraform-Setup
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -81,7 +52,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION}}
 
       - name: Authenticate to AWS Public ECR
-        run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+        run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/q0j4m6z6
 
       - name: Build Docker Image
         run: |
@@ -91,7 +62,7 @@ jobs:
         run: |
            docker push ${{ secrets.ECR_REPOSITORY }}:latest
 
-  Deploy_to_ECS:
+  Deploy_to_EKS:
     needs: Deploy_image_ECR
     runs-on: ubuntu-latest
 
@@ -101,10 +72,18 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION}}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Update ECS Task Definition
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure kubectl
         run: |
-          aws ecs update-service --cluster my-ecs-cluster-v3 \
-          --service spring-boot-service \
-          --desired-count 1
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name my-eks-cluster
+
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
