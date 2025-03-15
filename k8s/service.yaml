@@ -7,6 +7,7 @@ spec:
     app: spring-boot-app
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
-  type: LoadBalancer
+      port: 80      # Service port (optional)
+      targetPort: 8080  # Port inside the container
+      nodePort: 30008  # Exposed on each node
+  type: NodePort
