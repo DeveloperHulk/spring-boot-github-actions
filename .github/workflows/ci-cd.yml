@@ -3,7 +3,7 @@ name: EKS Deployment
 on:
   push:
     branches:
-      - ECR
+      - EKS
   pull_request:
     branches:
       - ECR
