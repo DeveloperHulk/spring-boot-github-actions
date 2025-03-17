@@ -90,8 +90,4 @@ jobs:
         run: |
           kubectl set image deployment/spring-boot-deployment-v1 spring-boot-container-v1=${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
-      - name: Apply Kubernetes Configuration (Deployment, Service, Ingress)
-        run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
-          kubectl apply -f k8s/ingress.yaml
+      
