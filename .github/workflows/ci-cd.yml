@@ -86,8 +86,16 @@ jobs:
         run: |
           aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name my-eks-cluster
 
-      - name: Update Deployment with New Image
+      - name: Update Image in Deployment YAML
         run: |
-          kubectl set image deployment/spring-boot-deployment-v1 spring-boot-container-v1=${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
+          sed -i "s|image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app:.*|image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app:${{ github.sha }}|g" k8s/deployment.yaml
+
+      - name: Apply Kubernetes Configuration (Deployment, Service, Ingress)
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
+
+  
 
       
