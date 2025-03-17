@@ -3,7 +3,7 @@ name: EKS Deployment
 on:
   push:
     branches:
-      - ECR
+      - EKS
   pull_request:
     branches:
       - ECR
@@ -95,6 +95,8 @@ jobs:
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl apply -f k8s/ingress.yaml
+          kubectl apply -f k8s/canary-deployment.yaml
+          kubectl apply -f k8s/service-v2.yaml
 
   
 
