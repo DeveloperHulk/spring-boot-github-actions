@@ -1,15 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-boot-service
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "classic"  # Use Classic Load Balancer
-    service.beta.kubernetes.io/aws-load-balancer-internal: "false"  # "true" if internal
+  name: spring-boot-service-v1
 spec:
+  type: ClusterIP
   selector:
-    app: spring-boot-app
+    app: my-app
+    version: v1
   ports:
     - protocol: TCP
-      port: 80        # Exposed on CLB
-      targetPort: 8080  # Inside the pod
-  type: LoadBalancer
+      port: 80
+      targetPort: 8080
