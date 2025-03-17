@@ -3,7 +3,7 @@ name: EKS Deployment
 on:
   push:
     branches:
-      - EKS
+      - ECR
   pull_request:
     branches:
       - ECR
@@ -56,9 +56,42 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.ECR_REPOSITORY }}:v2 .
+          docker build -t ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
 
       - name: Push Docker Image to AWS Public ECR
         run: |
-           docker push ${{ secrets.ECR_REPOSITORY }}:v2
+          docker push ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
 
+  Deploy_to_EKS:
+    needs: Deploy_image_ECR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4  # Fetches your repo, including k8s/ directory
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name my-eks-cluster
+
+      - name: Update Deployment with New Image
+        run: |
+          kubectl set image deployment/spring-boot-deployment-v1 spring-boot-container-v1=${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: Apply Kubernetes Configuration (Deployment, Service, Ingress)
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
