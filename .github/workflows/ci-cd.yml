@@ -30,7 +30,8 @@ jobs:
       - name: Run SonarQube Analysis
         run: |
           mvn sonar:sonar \
-            -Dsonar.projectKey=my-spring-boot-app1 \
+            -Dsonar.projectKey=my-spring-boot-app \
+            -Dsonar.projectName=my-spring-boot-app \
             -Dsonar.host.url=${{ secrets.SONARQUBE_HOST }} \
             -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }}
 
