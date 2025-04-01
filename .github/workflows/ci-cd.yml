@@ -1,17 +1,43 @@
-name: EKS Deployment
-
+name: SonarQube Analysis
 on:
   push:
     branches:
-      - EKS
+      - sonarqube
   pull_request:
     branches:
       - ECR
 
-jobs: 
-  Build-Spring-boot:
+jobs:
+   SonarQube-Analysis:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Run SonarQube Analysis
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=my-spring-boot-app \
+            -Dsonar.host.url=${{ secrets.SONARQUBE_HOST }} \
+            -Dsonar.login=${{ secrets.SONARQUBE_TOKEN }}
+
+   Build-Spring-boot:
+     needs: SonarQube-Analysis
+     runs-on: ubuntu-latest
+     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -30,74 +56,5 @@ jobs:
           name: application-jar
           path: target/demo-0.0.1-SNAPSHOT.jar
 
-  Deploy_image_ECR:
-    needs: Build-Spring-boot
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Download JAR from Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: application-jar
-          path: target/
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION}}
-
-      - name: Authenticate to AWS Public ECR
-        run: aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/q0j4m6z6
-
-      - name: Build Docker Image
-        run: |
-          docker build -t ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }} .
-
-      - name: Push Docker Image to AWS Public ECR
-        run: |
-          docker push ${{ secrets.ECR_REPOSITORY }}:${{ github.sha }}
-
-  Deploy_to_EKS:
-    needs: Deploy_image_ECR
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4  # Fetches your repo, including k8s/ directory
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Install kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: 'latest'
-
-      - name: Configure kubectl
-        run: |
-          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name my-eks-cluster
-
-      - name: Update Image in Deployment YAML
-        run: |
-          sed -i "s|image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app:.*|image: public.ecr.aws/q0j4m6z6/rahul87096/spring-boot-app:${{ github.sha }}|g" k8s/deployment.yaml
-
-      - name: Apply Kubernetes Configuration (Deployment, Service, Ingress)
-        run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
-          kubectl apply -f k8s/ingress.yaml
-          kubectl apply -f k8s/canary-deployment.yaml
-          kubectl apply -f k8s/service-v2.yaml
-
   
-
       
