@@ -28,4 +28,4 @@ jobs:
           sudo docker run -it -d -p 8080:80 --name my-nginx nginx
 
       - name: Verify Running Containers
-        run: docker ps -a
+        run: sudo docker ps -a
