@@ -22,13 +22,10 @@ jobs:
           newgrp docker  # Apply changes immediatelyy
           docker --version  # Verify Docker is installed
 
-      - name: Run Docker Hello-World
-        run: docker run hello-world
-
       - name: Pull and Run Nginx Container
         run: |
-          docker pull nginx
-          docker run -d -p 8080:80 --name my-nginx nginx
+          sudo docker pull nginx
+          sudo docker run -it -d -p 8080:80 --name my-nginx nginx
 
       - name: Verify Running Containers
         run: docker ps -a
