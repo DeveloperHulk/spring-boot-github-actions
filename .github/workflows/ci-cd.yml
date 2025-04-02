@@ -19,7 +19,7 @@ jobs:
           sudo systemctl start docker
           sudo systemctl enable docker
           sudo usermod -aG docker $USER
-          newgrp docker  # Apply changes immediately
+          newgrp docker  # Apply changes immediatelyy
           docker --version  # Verify Docker is installed
 
       - name: Run Docker Hello-World
