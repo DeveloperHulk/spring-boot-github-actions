@@ -19,7 +19,7 @@ jobs:
           sudo systemctl start docker
           sudo systemctl enable docker
           sudo usermod -aG docker $USER
-          newgrp docker  # Apply changes immediatelyy
+          newgrp docker  # Apply changes immediatelyyy
           docker --version  # Verify Docker is installed
 
       - name: Pull and Run Nginx Container
